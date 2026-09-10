@@ -30,7 +30,6 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* کادر با رقص نور و حاشیه نئونی متحرک */
     .card {
       position: relative;
       background: rgba(30, 41, 59, 0.85);
@@ -193,7 +192,7 @@
     </div>
   </div>
 
-  <!-- صفحه موفقیت هیجان‌انگیز نهایی -->
+  <!-- صفحه موفقیت -->
   <div id="successScreen" class="screen">
     <div class="success-box">
       <div class="success-icon">💌</div>
@@ -211,21 +210,17 @@
   let audioCtx = null;
   let ambientInterval = null;
 
-  // پخش موزیک آرامبخش ملایم به صورت ممتد تا زمان ارسال پیام
   function startSoothingAmbient() {
     if (audioCtx) return;
     try {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       audioCtx = new AudioContext();
-
-      // آکوردهای آرامبخش و ملایم پیانو/پد
       const chords = [
-        [261.63, 329.63, 392.00, 493.88], // Cmaj7
-        [220.00, 261.63, 329.63, 392.00], // Am7
-        [174.61, 220.00, 261.63, 329.63], // Fmaj7
-        [196.00, 246.94, 293.66, 349.23]  // G7
+        [261.63, 329.63, 392.00, 493.88],
+        [220.00, 261.63, 329.63, 392.00],
+        [174.61, 220.00, 261.63, 329.63],
+        [196.00, 246.94, 293.66, 349.23]
       ];
-
       let chordIndex = 0;
 
       function playChord() {
@@ -240,13 +235,12 @@
 
           osc.type = 'sine';
           osc.frequency.setValueAtTime(f, audioCtx.currentTime);
-
           filter.type = 'lowpass';
-          filter.frequency.setValueAtTime(350, audioCtx.currentTime); // صدای بم و نرم
+          filter.frequency.setValueAtTime(350, audioCtx.currentTime);
 
           gain.gain.setValueAtTime(0, audioCtx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.015, audioCtx.currentTime + 1.2); // محو آرام ورود
-          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.8); // محو آرام خروج
+          gain.gain.linearRampToValueAtTime(0.015, audioCtx.currentTime + 1.2);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.8);
 
           osc.connect(filter);
           filter.connect(gain);
@@ -258,13 +252,10 @@
       }
 
       playChord();
-      ambientInterval = setInterval(playChord, 3200); // تکرار ملایم آکوردها
-    } catch(e) {
-      console.log('Audio error:', e);
-    }
+      ambientInterval = setInterval(playChord, 3200);
+    } catch(e) {}
   }
 
-  // قطع کامل موزیک به محض کلیک روی خرس و ارسال
   function stopAmbient() {
     if (ambientInterval) {
       clearInterval(ambientInterval);
@@ -285,13 +276,18 @@
     document.getElementById('formScreen').classList.remove('active');
     document.getElementById('bearScreen').classList.add('active');
     
-    // شروع موزیک ملایم و آرامبخش ممتد
     startSoothingAmbient();
   }
 
   function sendDataAndShowSuccess() {
-    // قطع موزیک هنگام کلیک نهایی روی خرس
     stopAmbient();
+
+    // اضافه کردن پارامتر ضدکپچا برای جلوگیری از مسدود شدن درخواست دیگران
+    const finalData = {
+      sender_name: formDataObj.sender_name,
+      message: formDataObj.message,
+      _captcha: "false"
+    };
 
     fetch('https://formsubmit.co/ajax/andjfusw@gmail.com', {
       method: 'POST',
@@ -299,8 +295,11 @@
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: JSON.stringify(formDataObj)
-    }).catch(error => console.log('Error:', error));
+      body: JSON.stringify(finalData)
+    })
+    .then(res => res.json())
+    .then(data => console.log('Sent:', data))
+    .catch(error => console.log('Error:', error));
 
     document.getElementById('bearScreen').classList.remove('active');
     document.getElementById('successScreen').classList.add('active');
@@ -309,3 +308,4 @@
 
 </body>
 </html>
+
