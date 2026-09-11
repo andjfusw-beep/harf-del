@@ -22,7 +22,6 @@
       align-items: center;
       min-height: 100vh;
       padding: 20px;
-      overflow-y: auto;
     }
 
     @keyframes gradientBG {
@@ -42,7 +41,6 @@
       max-width: 400px;
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.2);
       text-align: center;
-      z-index: 1;
     }
 
     .card::before {
@@ -130,63 +128,6 @@
       display: block;
     }
 
-    .bear-container {
-      cursor: pointer;
-      margin: 15px 0;
-      transition: 0.3s;
-      user-select: none;
-    }
-
-    .bear-emoji {
-      font-size: 65px;
-      margin-bottom: 5px;
-      filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.6));
-      animation: bounce 1.5s infinite;
-    }
-
-    .bear-container:hover .bear-emoji {
-      transform: scale(1.15);
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-    }
-
-    .timer-num {
-      font-size: 55px;
-      color: #38bdf8;
-      font-weight: bold;
-      margin: 15px 0;
-      text-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
-      animation: pulseNum 1s infinite;
-    }
-
-    @keyframes pulseNum {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
-
-    .choice-btn {
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid #475569;
-      color: #38bdf8;
-      padding: 10px 14px;
-      border-radius: 15px;
-      font-size: 13px;
-      font-weight: bold;
-      cursor: pointer;
-      width: 100%;
-      margin-bottom: 8px;
-      transition: 0.3s;
-      text-align: right;
-    }
-
-    .choice-btn:hover {
-      background: #38bdf8;
-      color: #0f172a;
-    }
-
     .success-box {
       animation: zoomIn 0.5s ease-out forwards;
       padding: 10px 0;
@@ -208,40 +149,18 @@
 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 
 <div class="card">
-  <form id="messageForm" action="https://formsubmit.co/andjfusw@gmail.com" method="POST" target="hidden_iframe" onsubmit="startTimer(event)">
+  <form id="messageForm" action="https://formsubmit.co/andjfusw@gmail.com" method="POST" target="hidden_iframe" onsubmit="handleSubmit(event)">
     
     <input type="hidden" name="_captcha" value="false">
     <input type="hidden" name="_template" value="table">
-    <input type="hidden" id="selectedVibe" name="vibe_choice" value="معمولی">
 
     <div id="formScreen" class="screen active">
       <h2>✨ حرف دلتو بگو ✨</h2>
       <p class="subtitle">اول نام یا آیدی‌ات رو بنویس و بعد حرف دلت رو بفرست</p>
       
-      <input type="text" id="senderName" name="sender_name" class="input-box" placeholder="نام یا آیدی شما (مثلاً آیدی روبیکا)..." required>
-      <textarea id="messageText" name="message" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
+      <input type="text" name="sender_name" class="input-box" placeholder="نام یا آیدی شما (مثلاً آیدی روبیکا)..." required>
+      <textarea name="message" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
       <button type="submit">ارسال پیام 🚀</button>
-    </div>
-
-    <div id="timerScreen" class="screen">
-      <div class="bear-emoji">🎵</div>
-      <h2>در حال آماده‌سازی...</h2>
-      <p class="subtitle">می‌توانید در این صفحه بمانید و آهنگ را گوش دهید 🎶</p>
-      <div class="timer-num" id="timerNum">1</div>
-    </div>
-
-    <div id="bearScreen" class="screen">
-      <h2>آقا خرسه چی بگه؟</h2>
-      <p class="subtitle">یک آهنگ انتخاب کن، بعد روی خرس بزن تا ارسال بشه:</p>
-      
-      <button type="button" class="choice-btn" onclick="selectVibe('📜 فال حافظ ایرانی', this)">📜 فال حافظ ایرانی</button>
-      <button type="button" class="choice-btn" onclick="selectVibe('🪕 موزیک سنتی و شاد', this)">🪕 موزیک سنتی و شاد</button>
-      <button type="button" class="choice-btn" onclick="selectVibe('❤️ حرف دل عاشقانه', this)">❤️ حرف دل عاشقانه</button>
-
-      <div class="bear-container" onclick="submitFinalMessage()">
-        <div class="bear-emoji">🧸</div>
-        <p style="color: #34d399; font-weight: bold; font-size: 13px;">برای ارسال نهایی روی آقا خرسه بزن! 🚀</p>
-      </div>
     </div>
 
   </form>
@@ -258,73 +177,9 @@
 </div>
 
 <script>
-  let audioCtx = null;
-
-  function playIranianMelody() {
-    try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioContext();
-      const notes = [293.66, 329.63, 349.23, 392.00, 440.00, 523.25];
-      let time = audioCtx.currentTime;
-
-      notes.forEach((f, index) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(f, time + (index * 0.25));
-        
-        gain.gain.setValueAtTime(0, time + (index * 0.25));
-        gain.gain.linearRampToValueAtTime(0.08, time + (index * 0.25) + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.0001, time + (index * 0.25) + 0.4);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start(time + (index * 0.25));
-        osc.stop(time + (index * 0.25) + 0.4);
-      });
-    } catch(e) {}
-  }
-
-  function startTimer(event) {
-    event.preventDefault();
+  function handleSubmit(event) {
+    // نمایش آنی صفحه موفقیت به محض زدن دکمه ارسال
     document.getElementById('formScreen').classList.remove('active');
-    document.getElementById('timerScreen').classList.add('active');
-
-    // شروع پخش ملودی در صفحه انتظار
-    playIranianMelody();
-
-    let count = 1;
-    const timerDisplay = document.getElementById('timerNum');
-    timerDisplay.innerText = count;
-
-    let interval = setInterval(() => {
-      count++;
-      if (count <= 3) {
-        timerDisplay.innerText = count;
-      } else {
-        clearInterval(interval);
-        document.getElementById('timerScreen').classList.remove('active');
-        document.getElementById('bearScreen').classList.add('active');
-      }
-    }, 1000);
-  }
-
-  function selectVibe(vibeText, btn) {
-    document.getElementById('selectedVibe').value = vibeText;
-    document.querySelectorAll('.choice-btn').forEach(b => b.style.borderColor = '#475569');
-    btn.style.borderColor = '#38bdf8';
-    playIranianMelody();
-  }
-
-  function submitFinalMessage() {
-    // پخش آهنگ و ارسال فرم
-    playIranianMelody();
-    document.getElementById('messageForm').submit();
-
-    // رفتن آنی به صفحه موفقیت
-    document.getElementById('bearScreen').classList.remove('active');
     document.getElementById('successScreen').classList.add('active');
   }
 </script>
