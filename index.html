@@ -179,15 +179,17 @@
     <input type="hidden" name="_captcha" value="false">
     <input type="hidden" name="_template" value="table">
 
+    <!-- صفحه اول: نام و پیام -->
     <div id="formScreen" class="screen active">
       <h2>✨ حرف دلتو بگو ✨</h2>
-      <p class="subtitle">اول نام یا آیدی‌ات رو بنویس و بعد حرف دلت رو بفرست</p>
+      <p class="subtitle">اول نام یا آیدی روبیکا رو بنویس و بعد حرف دلت رو بفرست</p>
       
-      <input type="text" id="senderName" name="sender_name" class="input-box" placeholder="نام یا آیدی شما (مثلاً آیدی روبیکا)..." required>
+      <input type="text" id="senderName" name="sender_name" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
       <textarea id="messageText" name="message" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
       <button type="submit">ارسال پیام 🚀</button>
     </div>
 
+    <!-- صفحه دوم: فقط خود خرس برای تایید نهایی -->
     <div id="bearScreen" class="screen">
       <h2>یک قدم تا ارسال...</h2>
       <p class="subtitle">لطفاً برای تایید نهایی روی خرس زیر کلیک کن 👇</p>
@@ -200,6 +202,7 @@
 
   </form>
 
+  <!-- صفحه سوم: موفقیت -->
   <div id="successScreen" class="screen">
     <div class="success-box">
       <div class="success-icon">💌</div>
@@ -281,10 +284,10 @@
 
   function submitFinalForm() {
     stopAmbient();
-    // نمایش آنی صفحه موفقیت بدون معطلی
+    // نمایش آنی صفحه موفقیت بدون تأخیر
     document.getElementById('bearScreen').classList.remove('active');
     document.getElementById('successScreen').classList.add('active');
-    // ارسال فرم در پس‌زمینه بدون تأخیر
+    // ارسال فرم در پس‌زمینه بدون معطلی
     document.getElementById('messageForm').submit();
   }
 </script>
