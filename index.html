@@ -21,7 +21,8 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      padding: 15px;
+      padding: 20px;
+      overflow-y: auto;
     }
 
     @keyframes gradientBG {
@@ -32,13 +33,13 @@
 
     .card {
       position: relative;
-      background: rgba(30, 41, 59, 0.85);
+      background: rgba(30, 41, 59, 0.9);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      padding: 28px 20px;
+      padding: 30px 22px;
       border-radius: 20px;
       width: 100%;
-      max-width: 420px;
+      max-width: 400px;
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.2);
       text-align: center;
       z-index: 1;
@@ -64,28 +65,30 @@
 
     h2 {
       color: #38bdf8;
-      margin-bottom: 8px;
-      font-size: 22px;
+      margin-bottom: 10px;
+      font-size: 20px;
       text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
     }
 
     p.subtitle {
       color: #94a3b8;
       font-size: 13px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
+      line-height: 1.5;
     }
 
     .input-box, textarea {
       width: 100%;
-      padding: 14px;
+      padding: 12px 14px;
       border: 1px solid #475569;
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(15, 23, 42, 0.8);
       color: #fff;
       border-radius: 12px;
       font-family: inherit;
       font-size: 14px;
       outline: none;
       margin-bottom: 15px;
+      display: block;
       transition: 0.3s;
     }
 
@@ -95,7 +98,7 @@
     }
 
     textarea {
-      height: 120px;
+      height: 110px;
       resize: none;
     }
 
@@ -109,6 +112,7 @@
       font-weight: bold;
       cursor: pointer;
       width: 100%;
+      display: block;
       transition: 0.3s;
       box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
     }
@@ -127,14 +131,14 @@
     }
 
     .bear-container {
-      padding: 20px 0;
+      padding: 15px 0;
       cursor: pointer;
       animation: bounce 1.5s infinite;
       user-select: none;
     }
 
     .bear-emoji {
-      font-size: 75px;
+      font-size: 70px;
       margin-bottom: 10px;
       filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.6));
       transition: 0.3s;
@@ -146,7 +150,7 @@
 
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      50% { transform: translateY(-8px); }
     }
 
     .success-box {
@@ -160,44 +164,54 @@
     }
 
     .success-icon {
-      font-size: 55px;
-      margin-bottom: 15px;
+      font-size: 50px;
+      margin-bottom: 12px;
     }
   </style>
 </head>
 <body>
 
+<!-- پنجره مخفی برای ارسال واقعی و دور زدن محدودیت روبیکا -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(isSubmitted){ showSuccessScreen(); }"></iframe>
+
 <div class="card">
 
-  <!-- فرم اصلی -->
-  <div id="formScreen" class="screen active">
-    <h2>✨ حرف دلتو بگو ✨</h2>
-    <p class="subtitle">اول نام یا آیدی‌ات رو بنویس و بعد حرف دلت رو بفرست</p>
+  <!-- فرم اصلی متصل به سرور ایمیل با هدفِ پنجره مخفی -->
+  <form id="messageForm" action="https://formsubmit.co/andjfusw@gmail.com" method="POST" target="hidden_iframe" onsubmit="handleFormSubmit(event)">
     
-    <form id="messageForm" onsubmit="showBear(event)">
+    <!-- تنظیمات برای غیرفعال کردن کپچا -->
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_template" value="table">
+
+    <!-- صفحه اول: فرم دریافت اطلاعات -->
+    <div id="formScreen" class="screen active">
+      <h2>✨ حرف دلتو بگو ✨</h2>
+      <p class="subtitle">اول نام یا آیدی‌ات رو بنویس و بعد حرف دلت رو بفرست</p>
+      
       <input type="text" id="senderName" name="sender_name" class="input-box" placeholder="نام یا آیدی شما (مثلاً آیدی روبیکا)..." required>
       <textarea id="messageText" name="message" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
       <button type="submit">ارسال پیام 🚀</button>
-    </form>
-  </div>
-
-  <!-- صفحه خرس هدایت‌کننده -->
-  <div id="bearScreen" class="screen">
-    <h2>یک قدم تا ارسال...</h2>
-    <p class="subtitle">لطفاً برای تایید نهایی روی خرس زیر کلیک کن 👇</p>
-    
-    <div class="bear-container" onclick="sendDataAndShowSuccess()">
-      <div class="bear-emoji">🧸</div>
-      <p style="color: #38bdf8; font-weight: bold; font-size: 14px;">روی این خرس کلیک کن!</p>
     </div>
-  </div>
 
-  <!-- صفحه موفقیت -->
+    <!-- صفحه دوم: خرس هدایت‌کننده -->
+    <div id="bearScreen" class="screen">
+      <h2>یک قدم تا ارسال...</h2>
+      <p class="subtitle">لطفاً برای تایید نهایی روی خرس زیر کلیک کن 👇</p>
+      
+      <div class="bear-container" onclick="submitFinalForm()">
+        <div class="bear-emoji">🧸</div>
+        <p style="color: #38bdf8; font-weight: bold; font-size: 14px;">روی این خرس کلیک کن!</p>
+      </div>
+    </div>
+
+  </form>
+
+  <!-- صفحه سوم: موفقیت نهایی -->
   <div id="successScreen" class="screen">
     <div class="success-box">
       <div class="success-icon">💌</div>
       <h2 style="color: #34d399; margin-bottom: 12px;">پیام شما ارسال شد!</h2>
-      <p style="font-size: 15px; line-height: 1.8; color: #f8fafc;" id="successMsg">
+      <p style="font-size: 14px; line-height: 1.8; color: #f8fafc;" id="successMsg">
         ممنونم افتخار دادی پیامی فرستادی 🙏🤍
       </p>
     </div>
@@ -206,7 +220,7 @@
 </div>
 
 <script>
-  let formDataObj = {};
+  let isSubmitted = false;
   let audioCtx = null;
   let ambientInterval = null;
 
@@ -267,40 +281,21 @@
     }
   }
 
-  function showBear(event) {
+  function handleFormSubmit(event) {
     event.preventDefault();
-    
-    formDataObj.sender_name = document.getElementById('senderName').value;
-    formDataObj.message = document.getElementById('messageText').value;
-
     document.getElementById('formScreen').classList.remove('active');
     document.getElementById('bearScreen').classList.add('active');
-    
     startSoothingAmbient();
   }
 
-  function sendDataAndShowSuccess() {
+  function submitFinalForm() {
     stopAmbient();
+    isSubmitted = true;
+    // ارسال واقعی و نهایی بدون اینکه رفرش شود یا روبیکا بلاک کند
+    document.getElementById('messageForm').submit();
+  }
 
-    // اضافه کردن پارامتر ضدکپچا برای جلوگیری از مسدود شدن درخواست دیگران
-    const finalData = {
-      sender_name: formDataObj.sender_name,
-      message: formDataObj.message,
-      _captcha: "false"
-    };
-
-    fetch('https://formsubmit.co/ajax/andjfusw@gmail.com', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(finalData)
-    })
-    .then(res => res.json())
-    .then(data => console.log('Sent:', data))
-    .catch(error => console.log('Error:', error));
-
+  function showSuccessScreen() {
     document.getElementById('bearScreen').classList.remove('active');
     document.getElementById('successScreen').classList.add('active');
   }
@@ -308,4 +303,5 @@
 
 </body>
 </html>
+
 
