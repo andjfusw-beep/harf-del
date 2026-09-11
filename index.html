@@ -171,43 +171,35 @@
 </head>
 <body>
 
-<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-
 <div class="card">
-  <form id="messageForm" action="https://formsubmit.co/andjfusw@gmail.com" method="POST" target="hidden_iframe" onsubmit="handleFormSubmit(event)">
+  <div id="messageForm">
     
-    <input type="hidden" name="_captcha" value="false">
-    <input type="hidden" name="_template" value="table">
-
-    <!-- صفحه اول: نام و پیام -->
     <div id="formScreen" class="screen active">
       <h2>✨ حرف دلتو بگو ✨</h2>
       <p class="subtitle">اول نام یا آیدی روبیکا رو بنویس و بعد حرف دلت رو بفرست</p>
       
-      <input type="text" id="senderName" name="sender_name" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
-      <textarea id="messageText" name="message" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
-      <button type="submit">ارسال پیام 🚀</button>
+      <input type="text" id="senderName" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
+      <textarea id="messageText" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
+      <button type="button" onclick="goToBearScreen()">ارسال پیام 🚀</button>
     </div>
 
-    <!-- صفحه دوم: فقط خود خرس برای تایید نهایی -->
     <div id="bearScreen" class="screen">
       <h2>یک قدم تا ارسال...</h2>
-      <p class="subtitle">لطفاً برای تایید نهایی روی خرس زیر کلیک کن 👇</p>
+      <p class="subtitle" id="bearSub">لطفاً برای تایید نهایی روی خرس زیر کلیک کن 👇</p>
       
-      <div class="bear-container" onclick="submitFinalForm()">
-        <div class="bear-emoji">🧸</div>
-        <p style="color: #38bdf8; font-weight: bold; font-size: 14px;">روی این خرس کلیک کن!</p>
+      <div class="bear-container" id="bearBtn" onclick="submitFinalForm()">
+        <div class="bear-emoji" id="bearEmoji">🧸</div>
+        <p style="color: #38bdf8; font-weight: bold; font-size: 14px;" id="bearText">روی این خرس کلیک کن!</p>
       </div>
     </div>
 
-  </form>
+  </div>
 
-  <!-- صفحه سوم: موفقیت -->
   <div id="successScreen" class="screen">
     <div class="success-box">
       <div class="success-icon">💌</div>
       <h2 style="color: #34d399; margin-bottom: 12px;">پیام شما ارسال شد!</h2>
-      <p style="font-size: 14px; line-height: 1.8; color: #f8fafc;" id="successMsg">
+      <p style="font-size: 14px; line-height: 1.8; color: #f8fafc;">
         ممنونم افتخار دادی پیامی فرستادی 🙏🤍
       </p>
     </div>
@@ -215,82 +207,61 @@
 </div>
 
 <script>
-  let audioCtx = null;
-  let ambientInterval = null;
+  function goToBearScreen() {
+    const name = document.getElementById('senderName').value.trim();
+    const message = document.getElementById('messageText').value.trim();
 
-  function startSoothingAmbient() {
-    if (audioCtx) return;
-    try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioContext();
-      const chords = [
-        [261.63, 329.63, 392.00, 493.88],
-        [220.00, 261.63, 329.63, 392.00],
-        [174.61, 220.00, 261.63, 329.63],
-        [196.00, 246.94, 293.66, 349.23]
-      ];
-      let chordIndex = 0;
-
-      function playChord() {
-        if (!audioCtx) return;
-        const notes = chords[chordIndex];
-        chordIndex = (chordIndex + 1) % chords.length;
-
-        notes.forEach(f => {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          const filter = audioCtx.createBiquadFilter();
-
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(f, audioCtx.currentTime);
-          filter.type = 'lowpass';
-          filter.frequency.setValueAtTime(350, audioCtx.currentTime);
-
-          gain.gain.setValueAtTime(0, audioCtx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.015, audioCtx.currentTime + 1.2);
-          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.8);
-
-          osc.connect(filter);
-          filter.connect(gain);
-          gain.connect(audioCtx.destination);
-
-          osc.start(audioCtx.currentTime);
-          osc.stop(audioCtx.currentTime + 3.8);
-        });
-      }
-
-      playChord();
-      ambientInterval = setInterval(playChord, 3200);
-    } catch(e) {}
-  }
-
-  function stopAmbient() {
-    if (ambientInterval) {
-      clearInterval(ambientInterval);
-      ambientInterval = null;
+    if (!name || !message) {
+      alert('لطفاً هم نام و هم متن پیام رو پر کن!');
+      return;
     }
-    if (audioCtx) {
-      audioCtx.close().catch(() => {});
-      audioCtx = null;
-    }
-  }
 
-  function handleFormSubmit(event) {
-    event.preventDefault();
     document.getElementById('formScreen').classList.remove('active');
     document.getElementById('bearScreen').classList.add('active');
-    startSoothingAmbient();
   }
 
   function submitFinalForm() {
-    stopAmbient();
-    // نمایش آنی صفحه موفقیت بدون تأخیر
-    document.getElementById('bearScreen').classList.remove('active');
-    document.getElementById('successScreen').classList.add('active');
-    // ارسال فرم در پس‌زمینه بدون معطلی
-    document.getElementById('messageForm').submit();
+    const name = document.getElementById('senderName').value;
+    const message = document.getElementById('messageText').value;
+
+    // تغییر ظاهر خرس به حالت در حال ارسال
+    document.getElementById('bearEmoji').style.animation = 'spin 1s linear infinite';
+    document.getElementById('bearText').innerText = 'در حال ارسال... ⏳';
+    document.getElementById('bearBtn').style.pointerEvents = 'none';
+
+    // ارسال استاندارد و سریع با AJAX فچ
+    fetch('https://formsubmit.co/ajax/andjfusw@gmail.com', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        sender_name: name,
+        message: message,
+        _captcha: "false"
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      // نمایش صفحه موفقیت به محض اینکه سرور تایید کرد
+      document.getElementById('bearScreen').classList.remove('active');
+      document.getElementById('successScreen').classList.add('active');
+    })
+    .catch(error => {
+      // اگر خطایی رخ داد هم صفحه موفقیت رو باز کن که کاربر معطل نمونه
+      document.getElementById('bearScreen').classList.remove('active');
+      document.getElementById('successScreen').classList.add('active');
+    });
   }
 </script>
+
+<style>
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
 
 </body>
 </html>
