@@ -130,11 +130,22 @@
       display: block;
     }
 
+    .bear-container {
+      cursor: pointer;
+      margin: 15px 0;
+      transition: 0.3s;
+      user-select: none;
+    }
+
     .bear-emoji {
-      font-size: 60px;
+      font-size: 65px;
       margin-bottom: 5px;
       filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.6));
       animation: bounce 1.5s infinite;
+    }
+
+    .bear-container:hover .bear-emoji {
+      transform: scale(1.15);
     }
 
     @keyframes bounce {
@@ -143,7 +154,7 @@
     }
 
     .timer-num {
-      font-size: 50px;
+      font-size: 55px;
       color: #38bdf8;
       font-weight: bold;
       margin: 15px 0;
@@ -158,7 +169,7 @@
 
     .choice-btn {
       background: rgba(15, 23, 42, 0.9);
-      border: 1px solid #38bdf8;
+      border: 1px solid #475569;
       color: #38bdf8;
       padding: 10px 14px;
       border-radius: 15px;
@@ -166,7 +177,7 @@
       font-weight: bold;
       cursor: pointer;
       width: 100%;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       transition: 0.3s;
       text-align: right;
     }
@@ -174,7 +185,6 @@
     .choice-btn:hover {
       background: #38bdf8;
       color: #0f172a;
-      transform: scale(1.02);
     }
 
     .success-box {
@@ -198,7 +208,7 @@
 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 
 <div class="card">
-  <form id="messageForm" action="https://formsubmit.co/andjfusw@gmail.com" method="POST" target="hidden_iframe" onsubmit="handleFormSubmit(event)">
+  <form id="messageForm" action="https://formsubmit.co/andjfusw@gmail.com" method="POST" target="hidden_iframe" onsubmit="startTimer(event)">
     
     <input type="hidden" name="_captcha" value="false">
     <input type="hidden" name="_template" value="table">
@@ -215,19 +225,23 @@
 
     <div id="timerScreen" class="screen">
       <div class="bear-emoji">🎵</div>
-      <h2>در حال بارگذاری آهنگ...</h2>
+      <h2>در حال آماده‌سازی...</h2>
       <p class="subtitle">می‌توانید در این صفحه بمانید و آهنگ را گوش دهید 🎶</p>
       <div class="timer-num" id="timerNum">1</div>
     </div>
 
     <div id="bearScreen" class="screen">
-      <div class="bear-emoji">🧸</div>
       <h2>آقا خرسه چی بگه؟</h2>
-      <p class="subtitle">یک گزینه رو انتخاب کن تا خرسه برات بخونه و پیامت ارسال بشه:</p>
+      <p class="subtitle">یک آهنگ انتخاب کن، بعد روی خرس بزن تا ارسال بشه:</p>
       
-      <button type="button" class="choice-btn" onclick="chooseAndSend('📜 فال حافظ: در هوایت بی قرارم روز و شب...')">📜 شعر و فال حافظ ایرانی</button>
-      <button type="button" class="choice-btn" onclick="chooseAndSend('🪕 موزیک سنتی و محلی شاد')">🪕 آهنگ سنتی و شاد ایرانی</button>
-      <button type="button" class="choice-btn" onclick="chooseAndSend('❤️ حرف دل عاشقانه و خالصانه')">❤️ حرف دل خالصانه</button>
+      <button type="button" class="choice-btn" onclick="selectVibe('📜 فال حافظ ایرانی', this)">📜 فال حافظ ایرانی</button>
+      <button type="button" class="choice-btn" onclick="selectVibe('🪕 موزیک سنتی و شاد', this)">🪕 موزیک سنتی و شاد</button>
+      <button type="button" class="choice-btn" onclick="selectVibe('❤️ حرف دل عاشقانه', this)">❤️ حرف دل عاشقانه</button>
+
+      <div class="bear-container" onclick="submitFinalMessage()">
+        <div class="bear-emoji">🧸</div>
+        <p style="color: #34d399; font-weight: bold; font-size: 13px;">برای ارسال نهایی روی آقا خرسه بزن! 🚀</p>
+      </div>
     </div>
 
   </form>
@@ -273,7 +287,7 @@
     } catch(e) {}
   }
 
-  function handleFormSubmit(event) {
+  function startTimer(event) {
     event.preventDefault();
     document.getElementById('formScreen').classList.remove('active');
     document.getElementById('timerScreen').classList.add('active');
@@ -297,16 +311,19 @@
     }, 1000);
   }
 
-  function chooseAndSend(vibeText) {
+  function selectVibe(vibeText, btn) {
     document.getElementById('selectedVibe').value = vibeText;
-    
-    // پخش مجدد ملودی ایرانی
+    document.querySelectorAll('.choice-btn').forEach(b => b.style.borderColor = '#475569');
+    btn.style.borderColor = '#38bdf8';
     playIranianMelody();
+  }
 
-    // ارسال فرم در پس‌زمینه
+  function submitFinalMessage() {
+    // پخش آهنگ و ارسال فرم
+    playIranianMelody();
     document.getElementById('messageForm').submit();
 
-    // انتقال آنی به صفحه موفقیت
+    // رفتن آنی به صفحه موفقیت
     document.getElementById('bearScreen').classList.remove('active');
     document.getElementById('successScreen').classList.add('active');
   }
@@ -314,4 +331,5 @@
 
 </body>
 </html>
+
  
