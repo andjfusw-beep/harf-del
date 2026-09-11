@@ -22,6 +22,7 @@
       align-items: center;
       min-height: 100vh;
       padding: 20px;
+      overflow-y: auto;
     }
 
     @keyframes gradientBG {
@@ -41,6 +42,7 @@
       max-width: 400px;
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.2);
       text-align: center;
+      z-index: 1;
     }
 
     .card::before {
@@ -128,6 +130,29 @@
       display: block;
     }
 
+    .bear-container {
+      padding: 15px 0;
+      cursor: pointer;
+      animation: bounce 1.5s infinite;
+      user-select: none;
+    }
+
+    .bear-emoji {
+      font-size: 70px;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.6));
+      transition: 0.3s;
+    }
+
+    .bear-container:hover .bear-emoji {
+      transform: scale(1.15);
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
     .success-box {
       animation: zoomIn 0.5s ease-out forwards;
       padding: 10px 0;
@@ -149,7 +174,7 @@
 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 
 <div class="card">
-  <form id="messageForm" action="https://formsubmit.co/andjfusw@gmail.com" method="POST" target="hidden_iframe" onsubmit="handleSubmit(event)">
+  <form id="messageForm" action="https://formsubmit.co/andjfusw@gmail.com" method="POST" target="hidden_iframe" onsubmit="handleFormSubmit(event)">
     
     <input type="hidden" name="_captcha" value="false">
     <input type="hidden" name="_template" value="table">
@@ -158,9 +183,19 @@
       <h2>✨ حرف دلتو بگو ✨</h2>
       <p class="subtitle">اول نام یا آیدی‌ات رو بنویس و بعد حرف دلت رو بفرست</p>
       
-      <input type="text" name="sender_name" class="input-box" placeholder="نام یا آیدی شما (مثلاً آیدی روبیکا)..." required>
-      <textarea name="message" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
+      <input type="text" id="senderName" name="sender_name" class="input-box" placeholder="نام یا آیدی شما (مثلاً آیدی روبیکا)..." required>
+      <textarea id="messageText" name="message" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
       <button type="submit">ارسال پیام 🚀</button>
+    </div>
+
+    <div id="bearScreen" class="screen">
+      <h2>یک قدم تا ارسال...</h2>
+      <p class="subtitle">لطفاً برای تایید نهایی روی خرس زیر کلیک کن 👇</p>
+      
+      <div class="bear-container" onclick="submitFinalForm()">
+        <div class="bear-emoji">🧸</div>
+        <p style="color: #38bdf8; font-weight: bold; font-size: 14px;">روی این خرس کلیک کن!</p>
+      </div>
     </div>
 
   </form>
@@ -169,7 +204,7 @@
     <div class="success-box">
       <div class="success-icon">💌</div>
       <h2 style="color: #34d399; margin-bottom: 12px;">پیام شما ارسال شد!</h2>
-      <p style="font-size: 14px; line-height: 1.8; color: #f8fafc;">
+      <p style="font-size: 14px; line-height: 1.8; color: #f8fafc;" id="successMsg">
         ممنونم افتخار دادی پیامی فرستادی 🙏🤍
       </p>
     </div>
@@ -177,14 +212,82 @@
 </div>
 
 <script>
-  function handleSubmit(event) {
-    // نمایش آنی صفحه موفقیت به محض زدن دکمه ارسال
+  let audioCtx = null;
+  let ambientInterval = null;
+
+  function startSoothingAmbient() {
+    if (audioCtx) return;
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+      const chords = [
+        [261.63, 329.63, 392.00, 493.88],
+        [220.00, 261.63, 329.63, 392.00],
+        [174.61, 220.00, 261.63, 329.63],
+        [196.00, 246.94, 293.66, 349.23]
+      ];
+      let chordIndex = 0;
+
+      function playChord() {
+        if (!audioCtx) return;
+        const notes = chords[chordIndex];
+        chordIndex = (chordIndex + 1) % chords.length;
+
+        notes.forEach(f => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const filter = audioCtx.createBiquadFilter();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(350, audioCtx.currentTime);
+
+          gain.gain.setValueAtTime(0, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.015, audioCtx.currentTime + 1.2);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.8);
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start(audioCtx.currentTime);
+          osc.stop(audioCtx.currentTime + 3.8);
+        });
+      }
+
+      playChord();
+      ambientInterval = setInterval(playChord, 3200);
+    } catch(e) {}
+  }
+
+  function stopAmbient() {
+    if (ambientInterval) {
+      clearInterval(ambientInterval);
+      ambientInterval = null;
+    }
+    if (audioCtx) {
+      audioCtx.close().catch(() => {});
+      audioCtx = null;
+    }
+  }
+
+  function handleFormSubmit(event) {
+    event.preventDefault();
     document.getElementById('formScreen').classList.remove('active');
+    document.getElementById('bearScreen').classList.add('active');
+    startSoothingAmbient();
+  }
+
+  function submitFinalForm() {
+    stopAmbient();
+    // نمایش آنی صفحه موفقیت بدون معطلی
+    document.getElementById('bearScreen').classList.remove('active');
     document.getElementById('successScreen').classList.add('active');
+    // ارسال فرم در پس‌زمینه بدون تأخیر
+    document.getElementById('messageForm').submit();
   }
 </script>
 
 </body>
 </html>
-
- 
