@@ -171,11 +171,6 @@
 </head>
 <body>
 
-<!-- تگ صوتی واقعی برای پخش تضمینی موزیک -->
-<audio id="bgMusic" loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
-</audio>
-
 <div class="card">
   <div id="messageForm">
     
@@ -215,6 +210,74 @@
 </div>
 
 <script>
+  let audioCtx = null;
+  let ambientInterval = null;
+
+  function startSoothingAmbient() {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!audioCtx) {
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      const chords = [
+        [261.63, 329.63, 392.00, 493.88],
+        [220.00, 261.63, 329.63, 392.00],
+        [174.61, 220.00, 261.63, 329.63],
+        [196.00, 246.94, 293.66, 349.23]
+      ];
+      let chordIndex = 0;
+
+      function playChord() {
+        if (!audioCtx) return;
+        const notes = chords[chordIndex];
+        chordIndex = (chordIndex + 1) % chords.length;
+
+        notes.forEach(f => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const filter = audioCtx.createBiquadFilter();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(600, audioCtx.currentTime);
+
+          // ولوم کاملاً واضح و شنیدنی
+          gain.gain.setValueAtTime(0, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 1.0);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.8);
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start(audioCtx.currentTime);
+          osc.stop(audioCtx.currentTime + 3.8);
+        });
+      }
+
+      playChord();
+      if (!ambientInterval) {
+        ambientInterval = setInterval(playChord, 3200);
+      }
+    } catch(e) {}
+  }
+
+  function stopAmbient() {
+    if (ambientInterval) {
+      clearInterval(ambientInterval);
+      ambientInterval = null;
+    }
+    if (audioCtx) {
+      audioCtx.close().catch(() => {});
+      audioCtx = null;
+    }
+  }
+
   function goToBearScreen() {
     const name = document.getElementById('senderName').value.trim();
     const message = document.getElementById('messageText').value.trim();
@@ -226,28 +289,20 @@
 
     document.getElementById('formScreen').classList.remove('active');
     document.getElementById('bearScreen').classList.add('active');
-
-    // پخش موزیک واقعی به محض ورود به صفحه خرس
-    const music = document.getElementById('bgMusic');
-    music.volume = 0.4;
-    music.play().catch(e => console.log("Audio play blocked"));
+    startSoothingAmbient(); // پخش آهنگ با ولوم بالا
   }
 
   function submitFinalForm() {
     const name = document.getElementById('senderName').value;
     const message = document.getElementById('messageText').value;
 
-    // قطع موزیک به محض کلیک روی خرس
-    const music = document.getElementById('bgMusic');
-    music.pause();
-    music.currentTime = 0;
+    stopAmbient(); // قطع آهنگ به محض کلیک روی خرس
 
-    // تغییر ظاهر خرس به حالت در حال ارسال
     document.getElementById('bearEmoji').style.animation = 'spin 1s linear infinite';
     document.getElementById('bearText').innerText = 'در حال ارسال... ⏳';
     document.getElementById('bearBtn').style.pointerEvents = 'none';
 
-    // ارسال سریع و آنی با AJAX
+    // ارسال آنی پیام
     fetch('https://formsubmit.co/ajax/andjfusw@gmail.com', {
       method: 'POST',
       headers: { 
@@ -281,4 +336,3 @@
 
 </body>
 </html>
-
