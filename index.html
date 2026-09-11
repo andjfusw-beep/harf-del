@@ -207,6 +207,67 @@
 </div>
 
 <script>
+  let audioCtx = null;
+  let ambientInterval = null;
+
+  // موزیک آرامش‌بخش
+  function startSoothingAmbient() {
+    if (audioCtx) return;
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+      const chords = [
+        [261.63, 329.63, 392.00, 493.88],
+        [220.00, 261.63, 329.63, 392.00],
+        [174.61, 220.00, 261.63, 329.63],
+        [196.00, 246.94, 293.66, 349.23]
+      ];
+      let chordIndex = 0;
+
+      function playChord() {
+        if (!audioCtx) return;
+        const notes = chords[chordIndex];
+        chordIndex = (chordIndex + 1) % chords.length;
+
+        notes.forEach(f => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const filter = audioCtx.createBiquadFilter();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(350, audioCtx.currentTime);
+
+          gain.gain.setValueAtTime(0, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.015, audioCtx.currentTime + 1.2);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.8);
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start(audioCtx.currentTime);
+          osc.stop(audioCtx.currentTime + 3.8);
+        });
+      }
+
+      playChord();
+      ambientInterval = setInterval(playChord, 3200);
+    } catch(e) {}
+  }
+
+  function stopAmbient() {
+    if (ambientInterval) {
+      clearInterval(ambientInterval);
+      ambientInterval = null;
+    }
+    if (audioCtx) {
+      audioCtx.close().catch(() => {});
+      audioCtx = null;
+    }
+  }
+
   function goToBearScreen() {
     const name = document.getElementById('senderName').value.trim();
     const message = document.getElementById('messageText').value.trim();
@@ -218,18 +279,21 @@
 
     document.getElementById('formScreen').classList.remove('active');
     document.getElementById('bearScreen').classList.add('active');
+    startSoothingAmbient(); // شروع موزیک آرامش‌بخش
   }
 
   function submitFinalForm() {
     const name = document.getElementById('senderName').value;
     const message = document.getElementById('messageText').value;
 
+    stopAmbient(); // قطع موزیک موقع کلیک روی خرس
+
     // تغییر ظاهر خرس به حالت در حال ارسال
     document.getElementById('bearEmoji').style.animation = 'spin 1s linear infinite';
     document.getElementById('bearText').innerText = 'در حال ارسال... ⏳';
     document.getElementById('bearBtn').style.pointerEvents = 'none';
 
-    // ارسال استاندارد و سریع با AJAX فچ
+    // ارسال سریع و آنی با AJAX
     fetch('https://formsubmit.co/ajax/andjfusw@gmail.com', {
       method: 'POST',
       headers: { 
@@ -244,12 +308,10 @@
     })
     .then(response => response.json())
     .then(data => {
-      // نمایش صفحه موفقیت به محض اینکه سرور تایید کرد
       document.getElementById('bearScreen').classList.remove('active');
       document.getElementById('successScreen').classList.add('active');
     })
     .catch(error => {
-      // اگر خطایی رخ داد هم صفحه موفقیت رو باز کن که کاربر معطل نمونه
       document.getElementById('bearScreen').classList.remove('active');
       document.getElementById('successScreen').classList.add('active');
     });
