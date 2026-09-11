@@ -210,12 +210,17 @@
   let audioCtx = null;
   let ambientInterval = null;
 
-  // موزیک آرامش‌بخش
+  // موزیک آرامش‌بخش (نسخه تقویت شده و واضح)
   function startSoothingAmbient() {
-    if (audioCtx) return;
     try {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioContext();
+      if (!audioCtx) {
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
       const chords = [
         [261.63, 329.63, 392.00, 493.88],
         [220.00, 261.63, 329.63, 392.00],
@@ -237,10 +242,11 @@
           osc.type = 'sine';
           osc.frequency.setValueAtTime(f, audioCtx.currentTime);
           filter.type = 'lowpass';
-          filter.frequency.setValueAtTime(350, audioCtx.currentTime);
+          filter.frequency.setValueAtTime(600, audioCtx.currentTime);
 
+          // ولوم صدا رو بالاتر بردم تا کاملاً شنیده بشه
           gain.gain.setValueAtTime(0, audioCtx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.015, audioCtx.currentTime + 1.2);
+          gain.gain.linearRampToValueAtTime(0.06, audioCtx.currentTime + 1.0);
           gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.8);
 
           osc.connect(filter);
@@ -253,7 +259,9 @@
       }
 
       playChord();
-      ambientInterval = setInterval(playChord, 3200);
+      if (!ambientInterval) {
+        ambientInterval = setInterval(playChord, 3200);
+      }
     } catch(e) {}
   }
 
