@@ -186,7 +186,7 @@
 </head>
 <body>
 
-<!-- فریم مخفی برای ارسال بدون رفرش و ارور -->
+<!-- فریم مخفی برای ارسال بدون رفرش صفحه -->
 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted) { showSuccessScreen(); }"></iframe>
 
 <div class="card">
@@ -234,10 +234,10 @@
   </div>
 </div>
 
-<!-- موزیک لایت با لینک امن و پایدار CDN -->
+<!-- موزیک پس‌زمینه با لینک پایدار و لود خودکار -->
 <audio id="bgMusic" loop preload="auto">
-  <source src="https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg" type="audio/ogg">
-  <source src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
+  <source src="https://nsjo.ir/wp-content/uploads/2023/10/Lofi-Study.mp3" type="audio/mpeg">
+  <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
 </audio>
 
 <script>
@@ -252,10 +252,12 @@
       return;
     }
 
-    // پخش موزیک به محض لمس دکمه اول
+    // پخش موزیک به محض کلیک روی دکمه اول
     const music = document.getElementById('bgMusic');
-    music.volume = 0.6;
-    music.play().catch(e => console.log("Audio play error:", e));
+    music.volume = 0.5;
+    music.play().catch(err => {
+      console.log("Audio play blocked or failed:", err);
+    });
 
     document.getElementById('formScreen').classList.remove('active');
     document.getElementById('bearScreen').classList.add('active');
