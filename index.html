@@ -99,7 +99,7 @@
       resize: none;
     }
 
-    button {
+    button.next-btn {
       background: linear-gradient(90deg, #38bdf8, #6366f1);
       color: white;
       border: none;
@@ -113,7 +113,7 @@
       box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
     }
 
-    button:hover {
+    button.next-btn:hover {
       opacity: 0.9;
       transform: translateY(-1px);
     }
@@ -131,6 +131,9 @@
       cursor: pointer;
       animation: bounce 1.5s infinite;
       user-select: none;
+      background: none;
+      border: none;
+      width: 100%;
     }
 
     .bear-emoji {
@@ -167,43 +170,41 @@
 </head>
 <body>
 
-<!-- آی‌فریم مخفی برای ارسال بدون رفرش صفحه به گوگل فرم -->
 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(isSubmitted) { showSuccessScreen(); }"></iframe>
 
 <div class="card">
 
-  <!-- فرم اصلی متصل به گوگل‌فرم شما -->
-  <form id="messageForm" action="https://docs.google.com/forms/d/e/1FAIpQLSft6KHC4vrNUIh_FjDJXhHTMwAJnLZ4pRSNvKHtLjXEagrq3A/formResponse" method="POST" target="hidden_iframe" onsubmit="isSubmitted=true;">
+  <form id="messageForm" action="https://docs.google.com/forms/d/e/1FAIpQLScPytvuCW-_ENYq9iTMmEoYaHUie7ccyX2Xi6gBvXm5coQmOA/formResponse" method="POST" target="hidden_iframe" onsubmit="isSubmitted=true;">
     
-    <!-- صفحه اول: دریافت نام و متن پیام -->
+    <!-- صفحه اول -->
     <div id="formScreen" class="screen active">
       <h2>✨ حرف دلتو بگو ✨</h2>
       <p class="subtitle">اول نام یا آیدی‌ات رو بنویس و بعد حرف دلت رو بفرست</p>
       
-      <input type="text" id="senderName" name="entry.1046651828" class="input-box" placeholder="نام یا آیدی شما (مثلاً آیدی روبیکا)..." required>
-      <textarea id="messageText" name="entry.2096739665" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
+      <input type="text" id="senderName" name="entry.1304174434" class="input-box" placeholder="نام یا آیدی شما (مثلاً آیدی روبیکا)..." required>
+      <textarea id="messageText" name="entry.1304041091" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
       
-      <button type="button" onclick="goToBearScreen()">مرحله بعد 🚀</button>
+      <button type="button" class="next-btn" onclick="goToBearScreen()">مرحله بعد 🚀</button>
     </div>
 
-    <!-- صفحه دوم: خرس هدایت‌کننده و موزیک ملایم -->
+    <!-- صفحه دوم: خرس و موزیک -->
     <div id="bearScreen" class="screen">
       <h2>یک قدم تا ارسال...</h2>
       <p class="subtitle">لطفاً برای تایید نهایی روی خرس زیر کلیک کن 👇</p>
       
-      <button type="submit" class="bear-container" style="background: none; border: none; width: 100%; cursor: pointer;" onclick="playAndSubmit()">
+      <button type="submit" class="bear-container" onclick="playAndSubmit()">
         <div class="bear-emoji" id="bearEmoji">🧸</div>
         <p style="color: #38bdf8; font-weight: bold; font-size: 14px;">روی این خرس کلیک کن!</p>
       </button>
     </div>
 
-    <!-- صفحه موفقیت با قلب سفید -->
+    <!-- صفحه موفقیت با قلب سفید براق -->
     <div id="successScreen" class="screen">
       <div class="success-box">
         <div class="success-icon">💌</div>
         <h2 style="color: #34d399; margin-bottom: 12px;">پیام شما ارسال شد!</h2>
         <p style="font-size: 15px; line-height: 1.8; color: #f8fafc;">
-          ممنونم افتخار دادی پیامی فرستادی 🙏🤍
+          ممنونم افتخار دادی پیامی فرستادی 🙏 <span style="filter: drop-shadow(0 0 8px #ffffff); font-size: 18px;">🤍</span>
         </p>
       </div>
     </div>
@@ -290,7 +291,8 @@
   }
 
   function playAndSubmit() {
-    document.getElementById('bearEmoji.style') && (document.getElementById('bearEmoji').style.transform = 'scale(1.2)');
+    const emoji = document.getElementById('bearEmoji');
+    if (emoji) emoji.style.transform = 'scale(1.2)';
   }
 
   function showSuccessScreen() {
