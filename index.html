@@ -169,19 +169,6 @@
       0% { opacity: 0; transform: scale(0.8); }
       100% { opacity: 1; transform: scale(1); }
     }
-
-    .music-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      color: #38bdf8;
-      margin-bottom: 12px;
-    }
   </style>
 </head>
 <body>
@@ -197,10 +184,10 @@
     
     <!-- صفحه اول: نام و پیام -->
     <div id="formScreen" class="screen active">
-      <div class="music-badge">🎵 موزیک پس‌زمینه فعال است</div>
       <h2>✨ حرف دلتو بگو ✨</h2>
       <p class="subtitle">اول نام یا آیدی روبیکا رو بنویس و بعد حرف دلت رو بفرست</p>
       
+      <!-- توجه: نام entryها رو بر اساس سوالات گوگل‌فرم خودت گذاشتم -->
       <input type="text" id="senderName" name="entry.1046651828" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
       <textarea id="messageText" name="entry.2096739665" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
       
@@ -234,12 +221,6 @@
   </div>
 </div>
 
-<!-- موزیک پس‌زمینه با لینک پایدار و لود خودکار -->
-<audio id="bgMusic" loop preload="auto">
-  <source src="https://nsjo.ir/wp-content/uploads/2023/10/Lofi-Study.mp3" type="audio/mpeg">
-  <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
-</audio>
-
 <script>
   let submitted = false;
 
@@ -251,13 +232,6 @@
       alert('لطفاً هم نام و هم متن پیام رو پر کن!');
       return;
     }
-
-    // پخش موزیک به محض کلیک روی دکمه اول
-    const music = document.getElementById('bgMusic');
-    music.volume = 0.5;
-    music.play().catch(err => {
-      console.log("Audio play blocked or failed:", err);
-    });
 
     document.getElementById('formScreen').classList.remove('active');
     document.getElementById('bearScreen').classList.add('active');
