@@ -98,39 +98,111 @@
       resize: none;
     }
 
-    .submit-btn {
+    .next-btn {
       background: linear-gradient(90deg, #38bdf8, #6366f1);
       color: white;
       border: none;
-      padding: 14px;
+      padding: 12px;
       border-radius: 25px;
       font-size: 15px;
       font-weight: bold;
       cursor: pointer;
       width: 100%;
+      display: block;
       box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-      transition: 0.3s;
     }
 
-    .submit-btn:hover {
-      opacity: 0.9;
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .bear-submit-btn {
+      background: none;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .bear-container {
+      padding: 15px 0;
+      animation: bounce 1.5s infinite;
+    }
+
+    .bear-emoji {
+      font-size: 70px;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.6));
+      display: inline-block;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
 
 <div class="card">
-  <!-- ارسال مستقیم و تک‌صفحه‌ای به گوگل‌فرم -->
+  <!-- ارسال مستقیم و دقیق به گوگل فرم با دو مرحله‌ی اصلی -->
   <form action="https://docs.google.com/forms/d/e/1FAIpQLSft6KHC4vrNUIh_FjDJXhHTMwAJnLZ4pRSNvKHtLjXEagrq3A/formResponse" method="POST">
-    <h2>✨ حرف دلتو بگو ✨</h2>
-    <p class="subtitle">نام یا آیدی روبیکا و حرف دلت رو بنویس</p>
     
-    <input type="text" name="entry.1046651828" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
-    <textarea name="entry.2096739665" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
-    
-    <button type="submit" class="submit-btn">ارسال پیام 🧸</button>
+    <!-- صفحه اول: نام و پیام -->
+    <div id="formScreen" class="screen active">
+      <h2>✨ حرف دلتو بگو ✨</h2>
+      <p class="subtitle">اول نام یا آیدی روبیکا رو بنویس و بعد حرف دلت رو بفرست</p>
+      
+      <input type="text" id="senderName" name="entry.1046651828" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
+      <textarea id="messageText" name="entry.2096739665" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
+      
+      <button type="button" class="next-btn" onclick="goToBearScreen()">بعدی و انتخاب خرس 🧸</button>
+    </div>
+
+    <!-- صفحه دوم: خرس متحرک برای تایید نهایی و ارسال به گوگل -->
+    <div id="bearScreen" class="screen">
+      <h2>یک قدم تا ارسال...</h2>
+      <p class="subtitle">روی خرس زیر بزن تا پیامت مستقیم بره توی گوگل 👇</p>
+      
+      <button type="submit" class="bear-submit-btn" onclick="spinBear()">
+        <div class="bear-container">
+          <div class="bear-emoji" id="bearEmoji">🧸</div>
+          <p style="color: #38bdf8; font-weight: bold; font-size: 14px;" id="bearText">ارسال نهایی پیام 🚀</p>
+        </div>
+      </button>
+    </div>
+
   </form>
 </div>
+
+<script>
+  function goToBearScreen() {
+    const name = document.getElementById('senderName').value.trim();
+    const message = document.getElementById('messageText').value.trim();
+
+    if (!name || !message) {
+      alert('لطفاً هم نام و هم متن پیام رو پر کن!');
+      return;
+    }
+
+    document.getElementById('formScreen').classList.remove('active');
+    document.getElementById('bearScreen').classList.add('active');
+  }
+
+  function spinBear() {
+    document.getElementById('bearEmoji').style.animation = 'spin 0.6s linear infinite';
+    document.getElementById('bearText').innerText = 'در حال ارسال... ⏳';
+  }
+</script>
 
 </body>
 </html>
