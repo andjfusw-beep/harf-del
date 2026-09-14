@@ -21,7 +21,7 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      padding: 20px;
+      padding: 15px;
     }
 
     @keyframes gradientBG {
@@ -32,12 +32,13 @@
 
     .card {
       position: relative;
-      background: rgba(30, 41, 59, 0.95);
+      background: rgba(30, 41, 59, 0.85);
       backdrop-filter: blur(16px);
-      padding: 30px 22px;
+      -webkit-backdrop-filter: blur(16px);
+      padding: 28px 20px;
       border-radius: 20px;
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.2);
       text-align: center;
       z-index: 1;
@@ -63,30 +64,29 @@
 
     h2 {
       color: #38bdf8;
-      margin-bottom: 10px;
-      font-size: 20px;
+      margin-bottom: 8px;
+      font-size: 22px;
+      text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
     }
 
     p.subtitle {
-      color: #e2e8f0;
-      font-size: 14px;
-      margin-bottom: 18px;
-      line-height: 1.5;
-      font-weight: 500;
+      color: #94a3b8;
+      font-size: 13px;
+      margin-bottom: 20px;
     }
 
     .input-box, textarea {
       width: 100%;
-      padding: 12px 14px;
+      padding: 14px;
       border: 1px solid #475569;
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(15, 23, 42, 0.7);
       color: #fff;
       border-radius: 12px;
       font-family: inherit;
       font-size: 14px;
       outline: none;
       margin-bottom: 15px;
-      display: block;
+      transition: 0.3s;
     }
 
     .input-box:focus, textarea:focus {
@@ -95,11 +95,11 @@
     }
 
     textarea {
-      height: 110px;
+      height: 120px;
       resize: none;
     }
 
-    .next-btn {
+    button {
       background: linear-gradient(90deg, #38bdf8, #6366f1);
       color: white;
       border: none;
@@ -109,8 +109,13 @@
       font-weight: bold;
       cursor: pointer;
       width: 100%;
-      display: block;
+      transition: 0.3s;
       box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    }
+
+    button:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
     }
 
     .screen {
@@ -121,109 +126,180 @@
       display: block;
     }
 
-    .bear-submit-btn {
-      background: none;
-      border: none;
-      width: 100%;
-      cursor: pointer;
-      padding: 0;
-    }
-
     .bear-container {
-      padding: 15px 0;
+      padding: 20px 0;
+      cursor: pointer;
       animation: bounce 1.5s infinite;
+      user-select: none;
     }
 
     .bear-emoji {
-      font-size: 70px;
+      font-size: 75px;
       margin-bottom: 10px;
       filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.6));
-      display: inline-block;
+      transition: 0.3s;
+    }
+
+    .bear-container:hover .bear-emoji {
+      transform: scale(1.15);
     }
 
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+      50% { transform: translateY(-10px); }
     }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    .success-box {
+      animation: zoomIn 0.5s ease-out forwards;
+      padding: 10px 0;
+    }
+
+    @keyframes zoomIn {
+      0% { opacity: 0; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .success-icon {
+      font-size: 55px;
+      margin-bottom: 15px;
     }
   </style>
 </head>
 <body>
 
-<!-- آی‌فریم مخفی برای ارسال بدون خطا و بدون پرش صفحه -->
-<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(isSubmitted) { showSuccess(); }"></iframe>
-
 <div class="card">
-  <!-- لینک اکشن فرم گوگل خودت رو اینجا بذار -->
-  <form action="https://docs.google.com/forms/d/e/1FAIpQLSft6KHC4vrNUIh_FjDJXhHTMwAJnLZ4pRSNvKHtLjXEagrq3A/formResponse" method="POST" target="hidden_iframe" onsubmit="isSubmitted=true;">
+
+  <!-- فرم اصلی -->
+  <div id="formScreen" class="screen active">
+    <h2>✨ حرف دلتو بگو ✨</h2>
+    <p class="subtitle">اول نام یا آیدی‌ات رو بنویس و بعد حرف دلت رو بفرست</p>
     
-    <!-- صفحه اول: نام و پیام -->
-    <div id="formScreen" class="screen active">
-      <h2>✨ حرف دلتو بگو ✨</h2>
-      <p class="subtitle">اول نام یا آیدی روبیکا رو بنویس و بعد حرف دلت رو بفرست</p>
-      
-      <input type="text" id="senderName" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
-      <textarea id="messageText" class="input-box" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
-      
-      <button type="button" class="next-btn" onclick="goToBearScreen()">مرحله بعد</button>
+    <form id="messageForm" onsubmit="showBear(event)">
+      <input type="text" id="senderName" name="sender_name" class="input-box" placeholder="نام یا آیدی شما (مثلاً آیدی روبیکا)..." required>
+      <textarea id="messageText" name="message" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
+      <button type="submit">ارسال پیام 🚀</button>
+    </form>
+  </div>
+
+  <!-- صفحه خرس هدایت‌کننده -->
+  <div id="bearScreen" class="screen">
+    <h2>یک قدم تا ارسال...</h2>
+    <p class="subtitle">لطفاً برای تایید نهایی روی خرس زیر کلیک کن 👇</p>
+    
+    <div class="bear-container" onclick="sendDataAndShowSuccess()">
+      <div class="bear-emoji">🧸</div>
+      <p style="color: #38bdf8; font-weight: bold; font-size: 14px;">روی این خرس کلیک کن!</p>
     </div>
+  </div>
 
-    <!-- صفحه دوم: خرس متحرک و ارسال نهایی با entry های فرم خودت -->
-    <div id="bearScreen" class="screen">
-      <h2>یک قدم تا ارسال پیام...</h2>
-      <p class="subtitle">روی خرس زیر بزن تا پیامت ارسال بشه 👇</p>
-      
-      <!-- حتماً مطمئن شو این entry.xxxxxx ها مال فرم گوگل خودتن -->
-      <input type="hidden" name="entry.1046651828" id="hiddenName">
-      <input type="hidden" name="entry.2096739665" id="hiddenMessage">
-
-      <button type="submit" class="bear-submit-btn" onclick="spinBear()">
-        <div class="bear-container">
-          <div class="bear-emoji" id="bearEmoji">🧸</div>
-          <p style="color: #38bdf8; font-weight: bold; font-size: 14px;" id="bearText">ارسال نهایی پیام 🚀</p>
-        </div>
-      </button>
+  <!-- صفحه موفقیت -->
+  <div id="successScreen" class="screen">
+    <div class="success-box">
+      <div class="success-icon">💌</div>
+      <h2 style="color: #34d399; margin-bottom: 12px;">پیام شما ارسال شد!</h2>
+      <p style="font-size: 15px; line-height: 1.8; color: #f8fafc;" id="successMsg">
+        ممنونم افتخار دادی پیامی فرستادی 🙏🤍
+      </p>
     </div>
+  </div>
 
-    <!-- صفحه موفقیت با قلب سفید -->
-    <div id="successScreen" class="screen">
-      <div style="font-size: 60px; margin-bottom: 15px;">✅</div>
-      <h2 style="color: #10b981;">پیامت با موفقیت ارسال شد!</h2>
-      <p class="subtitle">ممنون که حرف دلتو فرستادی 🤍</p>
-    </div>
-
-  </form>
 </div>
 
 <script>
-  let isSubmitted = false;
+  let formDataObj = {};
+  let audioCtx = null;
+  let ambientInterval = null;
 
-  function goToBearScreen() {
-    const name = document.getElementById('senderName').value.trim();
-    const message = document.getElementById('messageText').value.trim();
+  function startSoothingAmbient() {
+    if (audioCtx) return;
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+      const chords = [
+        [261.63, 329.63, 392.00, 493.88],
+        [220.00, 261.63, 329.63, 392.00],
+        [174.61, 220.00, 261.63, 329.63],
+        [196.00, 246.94, 293.66, 349.23]
+      ];
+      let chordIndex = 0;
 
-    if (!name || !message) {
-      alert('لطفاً هم نام و هم متن پیام رو پر کن!');
-      return;
+      function playChord() {
+        if (!audioCtx) return;
+        const notes = chords[chordIndex];
+        chordIndex = (chordIndex + 1) % chords.length;
+
+        notes.forEach(f => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const filter = audioCtx.createBiquadFilter();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(350, audioCtx.currentTime);
+
+          gain.gain.setValueAtTime(0, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.015, audioCtx.currentTime + 1.2);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.8);
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start(audioCtx.currentTime);
+          osc.stop(audioCtx.currentTime + 3.8);
+        });
+      }
+
+      playChord();
+      ambientInterval = setInterval(playChord, 3200);
+    } catch(e) {}
+  }
+
+  function stopAmbient() {
+    if (ambientInterval) {
+      clearInterval(ambientInterval);
+      ambientInterval = null;
     }
+    if (audioCtx) {
+      audioCtx.close().catch(() => {});
+      audioCtx = null;
+    }
+  }
 
-    document.getElementById('hiddenName').value = name;
-    document.getElementById('hiddenMessage').value = message;
+  function showBear(event) {
+    event.preventDefault();
+    
+    formDataObj.sender_name = document.getElementById('senderName').value;
+    formDataObj.message = document.getElementById('messageText').value;
 
     document.getElementById('formScreen').classList.remove('active');
     document.getElementById('bearScreen').classList.add('active');
+    
+    startSoothingAmbient();
   }
 
-  function spinBear() {
-    document.getElementById('bearEmoji').style.animation = 'spin 0.6s linear infinite';
-    document.getElementById('bearText').innerText = 'در حال ارسال... ⏳';
-  }
+  function sendDataAndShowSuccess() {
+    stopAmbient();
 
-  function showSuccess() {
+    const finalData = {
+      sender_name: formDataObj.sender_name,
+      message: formDataObj.message,
+      _captcha: "false"
+    };
+
+    fetch('https://formsubmit.co/ajax/andjfusw@gmail.com', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(finalData)
+    })
+    .then(res => res.json())
+    .then(data => console.log('Sent:', data))
+    .catch(error => console.log('Error:', error));
+
     document.getElementById('bearScreen').classList.remove('active');
     document.getElementById('successScreen').classList.add('active');
   }
