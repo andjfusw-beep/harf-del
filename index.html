@@ -167,46 +167,53 @@
 </head>
 <body>
 
+<!-- آی‌فریم مخفی برای ارسال بدون رفرش صفحه به گوگل فرم -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(isSubmitted) { showSuccessScreen(); }"></iframe>
+
 <div class="card">
 
-  <!-- فرم اصلی -->
-  <div id="formScreen" class="screen active">
-    <h2>✨ حرف دلتو بگو ✨</h2>
-    <p class="subtitle">اول نام یا آیدی‌ات رو بنویس و بعد حرف دلت رو بفرست</p>
+  <!-- فرم اصلی متصل به گوگل‌فرم شما -->
+  <form id="messageForm" action="https://docs.google.com/forms/d/e/1FAIpQLSft6KHC4vrNUIh_FjDJXhHTMwAJnLZ4pRSNvKHtLjXEagrq3A/formResponse" method="POST" target="hidden_iframe" onsubmit="isSubmitted=true;">
     
-    <form id="messageForm" onsubmit="showBear(event)">
-      <input type="text" id="senderName" name="sender_name" class="input-box" placeholder="نام یا آیدی شما (مثلاً آیدی روبیکا)..." required>
-      <textarea id="messageText" name="message" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
-      <button type="submit">ارسال پیام 🚀</button>
-    </form>
-  </div>
-
-  <!-- صفحه خرس هدایت‌کننده -->
-  <div id="bearScreen" class="screen">
-    <h2>یک قدم تا ارسال...</h2>
-    <p class="subtitle">لطفاً برای تایید نهایی روی خرس زیر کلیک کن 👇</p>
-    
-    <div class="bear-container" onclick="sendDataAndShowSuccess()">
-      <div class="bear-emoji">🧸</div>
-      <p style="color: #38bdf8; font-weight: bold; font-size: 14px;">روی این خرس کلیک کن!</p>
+    <!-- صفحه اول: دریافت نام و متن پیام -->
+    <div id="formScreen" class="screen active">
+      <h2>✨ حرف دلتو بگو ✨</h2>
+      <p class="subtitle">اول نام یا آیدی‌ات رو بنویس و بعد حرف دلت رو بفرست</p>
+      
+      <input type="text" id="senderName" name="entry.1046651828" class="input-box" placeholder="نام یا آیدی شما (مثلاً آیدی روبیکا)..." required>
+      <textarea id="messageText" name="entry.2096739665" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
+      
+      <button type="button" onclick="goToBearScreen()">مرحله بعد 🚀</button>
     </div>
-  </div>
 
-  <!-- صفحه موفقیت -->
-  <div id="successScreen" class="screen">
-    <div class="success-box">
-      <div class="success-icon">💌</div>
-      <h2 style="color: #34d399; margin-bottom: 12px;">پیام شما ارسال شد!</h2>
-      <p style="font-size: 15px; line-height: 1.8; color: #f8fafc;" id="successMsg">
-        ممنونم افتخار دادی پیامی فرستادی 🙏🤍
-      </p>
+    <!-- صفحه دوم: خرس هدایت‌کننده و موزیک ملایم -->
+    <div id="bearScreen" class="screen">
+      <h2>یک قدم تا ارسال...</h2>
+      <p class="subtitle">لطفاً برای تایید نهایی روی خرس زیر کلیک کن 👇</p>
+      
+      <button type="submit" class="bear-container" style="background: none; border: none; width: 100%; cursor: pointer;" onclick="playAndSubmit()">
+        <div class="bear-emoji" id="bearEmoji">🧸</div>
+        <p style="color: #38bdf8; font-weight: bold; font-size: 14px;">روی این خرس کلیک کن!</p>
+      </button>
     </div>
-  </div>
+
+    <!-- صفحه موفقیت با قلب سفید -->
+    <div id="successScreen" class="screen">
+      <div class="success-box">
+        <div class="success-icon">💌</div>
+        <h2 style="color: #34d399; margin-bottom: 12px;">پیام شما ارسال شد!</h2>
+        <p style="font-size: 15px; line-height: 1.8; color: #f8fafc;">
+          ممنونم افتخار دادی پیامی فرستادی 🙏🤍
+        </p>
+      </div>
+    </div>
+
+  </form>
 
 </div>
 
 <script>
-  let formDataObj = {};
+  let isSubmitted = false;
   let audioCtx = null;
   let ambientInterval = null;
 
@@ -267,11 +274,14 @@
     }
   }
 
-  function showBear(event) {
-    event.preventDefault();
-    
-    formDataObj.sender_name = document.getElementById('senderName').value;
-    formDataObj.message = document.getElementById('messageText').value;
+  function goToBearScreen() {
+    const name = document.getElementById('senderName').value.trim();
+    const message = document.getElementById('messageText').value.trim();
+
+    if (!name || !message) {
+      alert('لطفاً هم نام و هم متن پیام رو پر کن!');
+      return;
+    }
 
     document.getElementById('formScreen').classList.remove('active');
     document.getElementById('bearScreen').classList.add('active');
@@ -279,27 +289,12 @@
     startSoothingAmbient();
   }
 
-  function sendDataAndShowSuccess() {
+  function playAndSubmit() {
+    document.getElementById('bearEmoji.style') && (document.getElementById('bearEmoji').style.transform = 'scale(1.2)');
+  }
+
+  function showSuccessScreen() {
     stopAmbient();
-
-    const finalData = {
-      sender_name: formDataObj.sender_name,
-      message: formDataObj.message,
-      _captcha: "false"
-    };
-
-    fetch('https://formsubmit.co/ajax/andjfusw@gmail.com', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(finalData)
-    })
-    .then(res => res.json())
-    .then(data => console.log('Sent:', data))
-    .catch(error => console.log('Error:', error));
-
     document.getElementById('bearScreen').classList.remove('active');
     document.getElementById('successScreen').classList.add('active');
   }
