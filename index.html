@@ -154,10 +154,11 @@
 </head>
 <body>
 
-<!-- آی‌فریم مخفی برای ارسال بدون خطای گوگل‌فرم -->
+<!-- آی‌فریم مخفی برای ارسال بدون خطا و بدون پرش صفحه -->
 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(isSubmitted) { showSuccess(); }"></iframe>
 
 <div class="card">
+  <!-- لینک اکشن فرم گوگل خودت رو اینجا بذار -->
   <form action="https://docs.google.com/forms/d/e/1FAIpQLSft6KHC4vrNUIh_FjDJXhHTMwAJnLZ4pRSNvKHtLjXEagrq3A/formResponse" method="POST" target="hidden_iframe" onsubmit="isSubmitted=true;">
     
     <!-- صفحه اول: نام و پیام -->
@@ -165,16 +166,20 @@
       <h2>✨ حرف دلتو بگو ✨</h2>
       <p class="subtitle">اول نام یا آیدی روبیکا رو بنویس و بعد حرف دلت رو بفرست</p>
       
-      <input type="text" name="entry.1046651828" id="senderName" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
-      <textarea name="entry.2096739665" id="messageText" class="input-box" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
+      <input type="text" id="senderName" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
+      <textarea id="messageText" class="input-box" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
       
       <button type="button" class="next-btn" onclick="goToBearScreen()">مرحله بعد</button>
     </div>
 
-    <!-- صفحه دوم: خرس متحرک و ارسال نهایی -->
+    <!-- صفحه دوم: خرس متحرک و ارسال نهایی با entry های فرم خودت -->
     <div id="bearScreen" class="screen">
       <h2>یک قدم تا ارسال پیام...</h2>
       <p class="subtitle">روی خرس زیر بزن تا پیامت ارسال بشه 👇</p>
+      
+      <!-- حتماً مطمئن شو این entry.xxxxxx ها مال فرم گوگل خودتن -->
+      <input type="hidden" name="entry.1046651828" id="hiddenName">
+      <input type="hidden" name="entry.2096739665" id="hiddenMessage">
 
       <button type="submit" class="bear-submit-btn" onclick="spinBear()">
         <div class="bear-container">
@@ -184,11 +189,11 @@
       </button>
     </div>
 
-    <!-- صفحه موفقیت نهایی -->
+    <!-- صفحه موفقیت با قلب سفید -->
     <div id="successScreen" class="screen">
       <div style="font-size: 60px; margin-bottom: 15px;">✅</div>
       <h2 style="color: #10b981;">پیامت با موفقیت ارسال شد!</h2>
-      <p class="subtitle">ممنون که حرف دلتو فرستادی 💙</p>
+      <p class="subtitle">ممنون که حرف دلتو فرستادی 🤍</p>
     </div>
 
   </form>
@@ -205,6 +210,9 @@
       alert('لطفاً هم نام و هم متن پیام رو پر کن!');
       return;
     }
+
+    document.getElementById('hiddenName').value = name;
+    document.getElementById('hiddenMessage').value = message;
 
     document.getElementById('formScreen').classList.remove('active');
     document.getElementById('bearScreen').classList.add('active');
