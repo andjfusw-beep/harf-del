@@ -159,33 +159,47 @@
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
     }
+
+    .success-box {
+      animation: zoomIn 0.5s ease-out forwards;
+      padding: 10px 0;
+    }
+
+    @keyframes zoomIn {
+      0% { opacity: 0; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
   </style>
 </head>
 <body>
 
-<div class="card">
-  <!-- فرم استاندارد که مستقیماً به FormSubmit وصله و روبیکا جلوشو نمی‌گیره -->
-  <form action="https://formsubmit.co/andjfusw@gmail.com" method="POST">
-    
-    <input type="hidden" name="_captcha" value="false">
-    <input type="hidden" name="_template" value="table">
+<!-- فریم مخفی برای ارسال بدون رفرش صفحه -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted) { showSuccessScreen(); }"></iframe>
 
+<div class="card">
+  <form action="https://docs.google.com/forms/d/e/1FAIpQLSft6KHC4vrNUIh_FjDJXhHTMwAJnLZ4pRSNvKHtLjXEagrq3A/formResponse" 
+        method="POST" 
+        target="hidden_iframe" 
+        onsubmit="submitted=true;">
+    
     <!-- صفحه اول: نام و پیام -->
     <div id="formScreen" class="screen active">
       <h2>✨ حرف دلتو بگو ✨</h2>
       <p class="subtitle">اول نام یا آیدی روبیکا رو بنویس و بعد حرف دلت رو بفرست</p>
       
-      <input type="text" id="senderName" name="sender_name" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
-      <textarea id="messageText" name="message" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
+      <!-- توجه: نام entryها رو بر اساس سوالات گوگل‌فرم خودت گذاشتم -->
+      <input type="text" id="senderName" name="entry.1046651828" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
+      <textarea id="messageText" name="entry.2096739665" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
+      
       <button type="button" class="next-btn" onclick="goToBearScreen()">ارسال پیام 🚀</button>
     </div>
 
-    <!-- صفحه دوم: خرس به عنوان دکمه نهایی ارسال -->
+    <!-- صفحه دوم: خرس تایید نهایی -->
     <div id="bearScreen" class="screen">
       <h2>یک قدم تا ارسال...</h2>
       <p class="subtitle">لطفاً برای تایید نهایی روی خرس زیر کلیک کن 👇</p>
       
-      <button type="submit" class="bear-submit-btn" onclick="handleSubmitState()">
+      <button type="submit" class="bear-submit-btn" onclick="handleFormSubmit()">
         <div class="bear-container">
           <div class="bear-emoji" id="bearEmoji">🧸</div>
           <p style="color: #38bdf8; font-weight: bold; font-size: 14px;" id="bearText">روی این خرس کلیک کن!</p>
@@ -194,9 +208,22 @@
     </div>
 
   </form>
+
+  <!-- صفحه سوم: موفقیت -->
+  <div id="successScreen" class="screen">
+    <div class="success-box">
+      <div style="font-size: 50px; margin-bottom: 12px;">💌</div>
+      <h2 style="color: #34d399; margin-bottom: 12px;">پیام شما ارسال شد!</h2>
+      <p style="font-size: 14px; line-height: 1.8; color: #f8fafc;">
+        ممنونم افتخار دادی پیامی فرستادی 🙏🤍
+      </p>
+    </div>
+  </div>
 </div>
 
 <script>
+  let submitted = false;
+
   function goToBearScreen() {
     const name = document.getElementById('senderName').value.trim();
     const message = document.getElementById('messageText').value.trim();
@@ -210,9 +237,14 @@
     document.getElementById('bearScreen').classList.add('active');
   }
 
-  function handleSubmitState() {
+  function handleFormSubmit() {
     document.getElementById('bearEmoji').style.animation = 'spin 1s linear infinite';
     document.getElementById('bearText').innerText = 'در حال ارسال... ⏳';
+  }
+
+  function showSuccessScreen() {
+    document.getElementById('bearScreen').classList.remove('active');
+    document.getElementById('successScreen').classList.add('active');
   }
 </script>
 
