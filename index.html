@@ -32,7 +32,7 @@
 
     .card {
       position: relative;
-      background: rgba(30, 41, 59, 0.9);
+      background: rgba(30, 41, 59, 0.95);
       backdrop-filter: blur(16px);
       padding: 30px 22px;
       border-radius: 20px;
@@ -68,17 +68,18 @@
     }
 
     p.subtitle {
-      color: #94a3b8;
-      font-size: 13px;
+      color: #e2e8f0;
+      font-size: 14px;
       margin-bottom: 18px;
       line-height: 1.5;
+      font-weight: 500;
     }
 
     .input-box, textarea {
       width: 100%;
       padding: 12px 14px;
       border: 1px solid #475569;
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(15, 23, 42, 0.9);
       color: #fff;
       border-radius: 12px;
       font-family: inherit;
@@ -162,17 +163,21 @@
       <h2>✨ حرف دلتو بگو ✨</h2>
       <p class="subtitle">اول نام یا آیدی روبیکا رو بنویس و بعد حرف دلت رو بفرست</p>
       
-      <input type="text" id="senderName" name="entry.1046651828" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
-      <textarea id="messageText" name="entry.2096739665" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
+      <input type="text" id="senderName" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
+      <textarea id="messageText" class="input-box" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
       
       <button type="button" class="next-btn" onclick="goToBearScreen()">بعدی و انتخاب خرس 🧸</button>
     </div>
 
-    <!-- صفحه دوم: خرس متحرک برای ارسال نهایی -->
+    <!-- صفحه دوم: خرس متحرک و فیلدهای مخفی برای ارسال قطعی -->
     <div id="bearScreen" class="screen">
-      <h2>یک قدم تا ارسال...</h2>
-      <p class="subtitle">روی خرس زیر بزن تا پیامت مستقیم بره توی گوگل 👇</p>
+      <h2>یک قدم تا ارسال پیام...</h2>
+      <p class="subtitle">روی خرس زیر بزن تا پیامت ارسال بشه 👇</p>
       
+      <!-- این فیلدها مقدار رو از صفحه اول می‌گیرن تا گوگل‌فرم خطا نده -->
+      <input type="hidden" name="entry.1046651828" id="hiddenName">
+      <input type="hidden" name="entry.2096739665" id="hiddenMessage">
+
       <button type="submit" class="bear-submit-btn" onclick="spinBear()">
         <div class="bear-container">
           <div class="bear-emoji" id="bearEmoji">🧸</div>
@@ -193,6 +198,10 @@
       alert('لطفاً هم نام و هم متن پیام رو پر کن!');
       return;
     }
+
+    // ریختن مقادیر توی فیلدهای مخفی صفحه دوم
+    document.getElementById('hiddenName').value = name;
+    document.getElementById('hiddenMessage').value = message;
 
     document.getElementById('formScreen').classList.remove('active');
     document.getElementById('bearScreen').classList.add('active');
