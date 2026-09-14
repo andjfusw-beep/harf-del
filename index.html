@@ -102,7 +102,7 @@
       resize: none;
     }
 
-    button {
+    .next-btn {
       background: linear-gradient(90deg, #38bdf8, #6366f1);
       color: white;
       border: none;
@@ -117,7 +117,7 @@
       box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
     }
 
-    button:hover {
+    .next-btn:hover {
       opacity: 0.9;
       transform: translateY(-1px);
     }
@@ -130,9 +130,16 @@
       display: block;
     }
 
+    .bear-submit-btn {
+      background: none;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+      padding: 0;
+    }
+
     .bear-container {
       padding: 15px 0;
-      cursor: pointer;
       animation: bounce 1.5s infinite;
       user-select: none;
     }
@@ -152,132 +159,44 @@
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
     }
-
-    .success-box {
-      animation: zoomIn 0.5s ease-out forwards;
-      padding: 10px 0;
-    }
-
-    @keyframes zoomIn {
-      0% { opacity: 0; transform: scale(0.8); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    .success-icon {
-      font-size: 50px;
-      margin-bottom: 12px;
-    }
   </style>
 </head>
 <body>
 
 <div class="card">
-  <div id="messageForm">
+  <!-- فرم استاندارد که مستقیماً به FormSubmit وصله و روبیکا جلوشو نمی‌گیره -->
+  <form action="https://formsubmit.co/andjfusw@gmail.com" method="POST">
     
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_template" value="table">
+
     <!-- صفحه اول: نام و پیام -->
     <div id="formScreen" class="screen active">
       <h2>✨ حرف دلتو بگو ✨</h2>
       <p class="subtitle">اول نام یا آیدی روبیکا رو بنویس و بعد حرف دلت رو بفرست</p>
       
-      <input type="text" id="senderName" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
-      <textarea id="messageText" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
-      <button type="button" onclick="goToBearScreen()">ارسال پیام 🚀</button>
+      <input type="text" id="senderName" name="sender_name" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
+      <textarea id="messageText" name="message" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
+      <button type="button" class="next-btn" onclick="goToBearScreen()">ارسال پیام 🚀</button>
     </div>
 
-    <!-- صفحه دوم: خرس تایید نهایی -->
+    <!-- صفحه دوم: خرس به عنوان دکمه نهایی ارسال -->
     <div id="bearScreen" class="screen">
       <h2>یک قدم تا ارسال...</h2>
-      <p class="subtitle" id="bearSub">لطفاً برای تایید نهایی روی خرس زیر کلیک کن 👇</p>
+      <p class="subtitle">لطفاً برای تایید نهایی روی خرس زیر کلیک کن 👇</p>
       
-      <div class="bear-container" id="bearBtn" onclick="submitFinalForm()">
-        <div class="bear-emoji" id="bearEmoji">🧸</div>
-        <p style="color: #38bdf8; font-weight: bold; font-size: 14px;" id="bearText">روی این خرس کلیک کن!</p>
-      </div>
+      <button type="submit" class="bear-submit-btn" onclick="handleSubmitState()">
+        <div class="bear-container">
+          <div class="bear-emoji" id="bearEmoji">🧸</div>
+          <p style="color: #38bdf8; font-weight: bold; font-size: 14px;" id="bearText">روی این خرس کلیک کن!</p>
+        </div>
+      </button>
     </div>
 
-  </div>
-
-  <!-- صفحه سوم: موفقیت -->
-  <div id="successScreen" class="screen">
-    <div class="success-box">
-      <div class="success-icon">💌</div>
-      <h2 style="color: #34d399; margin-bottom: 12px;">پیام شما ارسال شد!</h2>
-      <p style="font-size: 14px; line-height: 1.8; color: #f8fafc;">
-        ممنونم افتخار دادی پیامی فرستادی 🙏🤍
-      </p>
-    </div>
-  </div>
+  </form>
 </div>
 
 <script>
-  let audioCtx = null;
-  let ambientInterval = null;
-
-  function startSoothingAmbient() {
-    try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!audioCtx) {
-        audioCtx = new AudioContext();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-
-      const chords = [
-        [261.63, 329.63, 392.00, 493.88],
-        [220.00, 261.63, 329.63, 392.00],
-        [174.61, 220.00, 261.63, 329.63],
-        [196.00, 246.94, 293.66, 349.23]
-      ];
-      let chordIndex = 0;
-
-      function playChord() {
-        if (!audioCtx) return;
-        const notes = chords[chordIndex];
-        chordIndex = (chordIndex + 1) % chords.length;
-
-        notes.forEach(f => {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          const filter = audioCtx.createBiquadFilter();
-
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(f, audioCtx.currentTime);
-          filter.type = 'lowpass';
-          filter.frequency.setValueAtTime(600, audioCtx.currentTime);
-
-          // ولوم کاملاً واضح و شنیدنی
-          gain.gain.setValueAtTime(0, audioCtx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 1.0);
-          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.8);
-
-          osc.connect(filter);
-          filter.connect(gain);
-          gain.connect(audioCtx.destination);
-
-          osc.start(audioCtx.currentTime);
-          osc.stop(audioCtx.currentTime + 3.8);
-        });
-      }
-
-      playChord();
-      if (!ambientInterval) {
-        ambientInterval = setInterval(playChord, 3200);
-      }
-    } catch(e) {}
-  }
-
-  function stopAmbient() {
-    if (ambientInterval) {
-      clearInterval(ambientInterval);
-      ambientInterval = null;
-    }
-    if (audioCtx) {
-      audioCtx.close().catch(() => {});
-      audioCtx = null;
-    }
-  }
-
   function goToBearScreen() {
     const name = document.getElementById('senderName').value.trim();
     const message = document.getElementById('messageText').value.trim();
@@ -289,41 +208,11 @@
 
     document.getElementById('formScreen').classList.remove('active');
     document.getElementById('bearScreen').classList.add('active');
-    startSoothingAmbient(); // پخش آهنگ با ولوم بالا
   }
 
-  function submitFinalForm() {
-    const name = document.getElementById('senderName').value;
-    const message = document.getElementById('messageText').value;
-
-    stopAmbient(); // قطع آهنگ به محض کلیک روی خرس
-
+  function handleSubmitState() {
     document.getElementById('bearEmoji').style.animation = 'spin 1s linear infinite';
     document.getElementById('bearText').innerText = 'در حال ارسال... ⏳';
-    document.getElementById('bearBtn').style.pointerEvents = 'none';
-
-    // ارسال آنی پیام
-    fetch('https://formsubmit.co/ajax/andjfusw@gmail.com', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        sender_name: name,
-        message: message,
-        _captcha: "false"
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById('bearScreen').classList.remove('active');
-      document.getElementById('successScreen').classList.add('active');
-    })
-    .catch(error => {
-      document.getElementById('bearScreen').classList.remove('active');
-      document.getElementById('successScreen').classList.add('active');
-    });
   }
 </script>
 
