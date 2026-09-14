@@ -155,7 +155,7 @@
 <body>
 
 <div class="card">
-  <!-- ارسال مستقیم به فرم گوگل -->
+  <!-- ارسال به فرم گوگل -->
   <form action="https://docs.google.com/forms/d/e/1FAIpQLSft6KHC4vrNUIh_FjDJXhHTMwAJnLZ4pRSNvKHtLjXEagrq3A/formResponse" method="POST">
     
     <!-- صفحه اول: نام و پیام -->
@@ -166,15 +166,15 @@
       <input type="text" id="senderName" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
       <textarea id="messageText" class="input-box" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
       
-      <button type="button" class="next-btn" onclick="goToBearScreen()">بعدی و انتخاب خرس 🧸</button>
+      <button type="button" class="next-btn" onclick="goToBearScreen()">مرحله بعد ➔</button>
     </div>
 
-    <!-- صفحه دوم: خرس متحرک و فیلدهای مخفی برای ارسال قطعی -->
+    <!-- صفحه دوم: خرس متحرک و ارسال نهایی -->
     <div id="bearScreen" class="screen">
       <h2>یک قدم تا ارسال پیام...</h2>
       <p class="subtitle">روی خرس زیر بزن تا پیامت ارسال بشه 👇</p>
       
-      <!-- این فیلدها مقدار رو از صفحه اول می‌گیرن تا گوگل‌فرم خطا نده -->
+      <!-- فیلدهای مخفی برای ارسال بدون خطای گوگل‌فرم -->
       <input type="hidden" name="entry.1046651828" id="hiddenName">
       <input type="hidden" name="entry.2096739665" id="hiddenMessage">
 
@@ -199,7 +199,6 @@
       return;
     }
 
-    // ریختن مقادیر توی فیلدهای مخفی صفحه دوم
     document.getElementById('hiddenName').value = name;
     document.getElementById('hiddenMessage').value = message;
 
