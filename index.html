@@ -155,7 +155,6 @@
 <body>
 
 <div class="card">
-  <!-- ارسال به فرم گوگل -->
   <form action="https://docs.google.com/forms/d/e/1FAIpQLSft6KHC4vrNUIh_FjDJXhHTMwAJnLZ4pRSNvKHtLjXEagrq3A/formResponse" method="POST">
     
     <!-- صفحه اول: نام و پیام -->
@@ -166,7 +165,7 @@
       <input type="text" id="senderName" class="input-box" placeholder="نام یا آیدی روبیکا..." required>
       <textarea id="messageText" class="input-box" placeholder="اینجا حرف دلتو بنویس..." required></textarea>
       
-      <button type="button" class="next-btn" onclick="goToBearScreen()">مرحله بعد ➔</button>
+      <button type="button" class="next-btn" onclick="goToBearScreen()">مرحله بعد</button>
     </div>
 
     <!-- صفحه دوم: خرس متحرک و ارسال نهایی -->
@@ -174,7 +173,6 @@
       <h2>یک قدم تا ارسال پیام...</h2>
       <p class="subtitle">روی خرس زیر بزن تا پیامت ارسال بشه 👇</p>
       
-      <!-- فیلدهای مخفی برای ارسال بدون خطای گوگل‌فرم -->
       <input type="hidden" name="entry.1046651828" id="hiddenName">
       <input type="hidden" name="entry.2096739665" id="hiddenMessage">
 
